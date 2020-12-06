@@ -24,8 +24,8 @@ const app = express();
 
 
 // Path público
-const publicPath = path.resolve(__dirname, 'public');
-app.use(express.static(publicPath));
+// const publicPath = path.resolve(__dirname, 'public');
+// app.use(express.static(publicPath));
 
 //Mis Rutas
 app.use('/', (req, res) => {
