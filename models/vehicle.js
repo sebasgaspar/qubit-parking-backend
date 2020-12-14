@@ -24,6 +24,12 @@ const Vehicle = sequelize.define('vehicles', {
     hour2: {
         type: Sequelize.TIME
     },
+    total:{
+        type: Sequelize.INTEGER
+    },
+    comentario: {
+        type: Sequelize.TEXT,
+    },
     pay:{
         type: Sequelize.BOOLEAN
     }

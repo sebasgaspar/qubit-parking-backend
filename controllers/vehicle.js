@@ -33,6 +33,30 @@ const createInsert = async (req, res) => {
         });
     }
 }
+const Update = async (req, res) => {
+    const { id, hora2, total, comentario } = req.body;
+    try {
+        console.log(total);
+        let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true }, {
+            where: {
+                id: id
+            }
+        });
+        if (newVehicle) {
+            res.json({
+                ok: true,
+                newVehicle,
+            });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Falló'
+        });
+    }
+}
 const search = async (req, res) => {
     const { placa } = req.body;
     try {
@@ -130,5 +154,6 @@ module.exports = {
     createInsert,
     search,
     getReport,
-    pay
+    pay,
+    Update
 }
