@@ -93,9 +93,11 @@ const search = async (req, res) => {
 const getReport = async (req, res) => {
     try {
         const time = req.params.wk
+        const { date } = req.body;
+        console.log(date);
         let vehicle = null;
         if (time == 0) {
-            vehicle = await sequelize.query("select * from vehicles where fecha = current_date;", { type: QueryTypes.SELECT });
+            vehicle = await sequelize.query(`select * from vehicles where fecha = DATE '${date}'`, { type: QueryTypes.SELECT });
         } else {
             vehicle = await sequelize.query(`SELECT * FROM vehicles where fecha > now() - interval '${time} week';`, { type: QueryTypes.SELECT });
         }
@@ -150,10 +152,39 @@ const pay = async (req, res) => {
     }
 
 }
+const deleteVehicle = async (req, res) => {
+    const { id } = req.body;
+    try {
+        const vehicle = await Vehicle.destroy({
+            where: {
+                id: id
+            }
+        });
+        if (!vehicle) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Vehiculo no encontrado'
+            });
+        }
+
+        res.json({
+            ok: true,
+            vehicle
+        })
+    }
+    catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+
+}
 module.exports = {
     createInsert,
     search,
     getReport,
     pay,
-    Update
+    Update,
+    deleteVehicle
 }

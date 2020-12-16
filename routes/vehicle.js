@@ -5,7 +5,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { validarCampos } = require('../middlewares/validar-campos');
-const { createInsert, search, getReport, pay, Update } = require('../controllers/vehicle');
+const { createInsert, search, getReport, pay, Update, deleteVehicle } = require('../controllers/vehicle');
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.post('/seacrh', [
     validarCampos
 ], search);
 
-router.get('/report/:wk', getReport);
+router.post('/report/:wk', getReport);
 
 router.post('/pay', pay);
 
@@ -32,5 +32,10 @@ router.post('/update', [
     check('total', 'El total es obligatorio').not().isEmpty(),
     validarCampos
 ], Update);
+
+router.post('/delete', [
+    check('id', 'El id es obligatorio').not().isEmpty(),
+    validarCampos
+], deleteVehicle);
 
 module.exports = router;
