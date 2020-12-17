@@ -14,7 +14,7 @@ const createInsert = async (req, res) => {
             placa,
             fecha,
             hour,
-            pay
+            pay,
         }, {
             fields: ['vehicle', 'placa', 'fecha', 'hour', 'pay']
         });
@@ -33,11 +33,23 @@ const createInsert = async (req, res) => {
         });
     }
 }
+async function getLast() {
+    try {
+        let last = await sequelize.query(`SELECT max(factura) FROM vehicles;`, { type: QueryTypes.SELECT });
+        console.log(JSON.parse(last))
+        if (!last) {
+            return last;
+        }
+    }
+    catch (error) {
+        return error;
+    }
+}
 const Update = async (req, res) => {
     const { id, hora2, total, comentario } = req.body;
     try {
-        console.log(total);
-        let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true }, {
+        let num = await getLast();
+        let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true, factura: 0 }, {
             where: {
                 id: id
             }
@@ -46,6 +58,7 @@ const Update = async (req, res) => {
             res.json({
                 ok: true,
                 newVehicle,
+                num
             });
         }
     }

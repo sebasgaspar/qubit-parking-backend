@@ -31,7 +31,10 @@ const Vehicle = sequelize.define('vehicles', {
         type: Sequelize.TEXT,
     },
     pay:{
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+    },
+    factura:{
+        type: Sequelize.INTEGER,
     }
 }, {
     timestamps: false

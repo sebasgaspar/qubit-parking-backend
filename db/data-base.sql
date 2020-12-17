@@ -53,6 +53,7 @@ CREATE TABLE vehicles(
     total INT NOT NULL DEFAULT 0,
     comentario TEXT,
     pay boolean NOT NULL,
+    factura INT NOT NULL,
     
     PRIMARY KEY(id)
 );
