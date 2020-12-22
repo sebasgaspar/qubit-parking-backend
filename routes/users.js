@@ -13,7 +13,7 @@ router.post('/new', [
     check('usuario', 'El usuario es obligatorio').not().isEmpty(),
     check('contrasena', 'La contrasena es obligatorio').not().isEmpty(),
     check('correo', 'El correo es obligatorio').isEmail(),
-    check('empresaId', 'El empresaId es obligatorio').not().isEmpty(),
+    check('parkingId', 'El parkingId es obligatorio').not().isEmpty(),
     validarCampos
 ],createUser);
 

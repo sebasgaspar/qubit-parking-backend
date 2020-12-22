@@ -1,5 +1,6 @@
 
 const { Vehicle, sequelize } = require('../models/vehicle');
+const { Vehicle_Parking } = require('./../models/vehicle_empresa');
 const { Tariff } = require('../models/tariff');
 const { QueryTypes } = require('sequelize');
 const { parseTime, getTime } = require('../helpers/functions');
@@ -33,12 +34,16 @@ const createInsert = async (req, res) => {
         });
     }
 }
-async function getLast() {
+async function getLast(id) {
     try {
-        let last = await sequelize.query(`SELECT max(factura) FROM vehicles;`, { type: QueryTypes.SELECT });
-        console.log(JSON.parse(last))
-        if (!last) {
+        let last = await sequelize.query(`SELECT max(factura) FROM vehicle_parkings WHERE "parkingId"=${id};`, { type: sequelize.QueryTypes.SELECT, raw: false })
+            .then(function (result) {
+                return result[0]['max'];
+            });
+        if (last !== null) {
             return last;
+        }else{
+            return 0;
         }
     }
     catch (error) {
@@ -46,19 +51,28 @@ async function getLast() {
     }
 }
 const Update = async (req, res) => {
-    const { id, hora2, total, comentario } = req.body;
+    const { id, hora2, total, comentario, parkingId } = req.body;
+    let factura = await getLast(parkingId);
+    console.log(factura);
+    factura = factura + 1
     try {
-        let num = await getLast();
-        let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true, factura: 0 }, {
+        let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true }, {
             where: {
                 id: id
             }
+        });
+        let vehicle_parking = await Vehicle_Parking.create({
+            vehicleId: id,
+            parkingId: parkingId,
+            factura
+        }, {
+            fields: ['vehicleId', 'parkingId', 'factura']
         });
         if (newVehicle) {
             res.json({
                 ok: true,
                 newVehicle,
-                num
+                vehicle_parking
             });
         }
     }
@@ -163,7 +177,6 @@ const pay = async (req, res) => {
             msg: 'Hable con el administrador'
         })
     }
-
 }
 const deleteVehicle = async (req, res) => {
     const { id } = req.body;

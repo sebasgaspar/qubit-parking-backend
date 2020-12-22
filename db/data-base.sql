@@ -26,13 +26,13 @@ CREATE TABLE usuarios(
     usuario TEXT NOT NULL,
     contrasena TEXT NOT NULL,
     correo TEXT NOT NULL,
-    empresaId INT NOT NULL,
+    parkingId INT NOT NULL,
 
     PRIMARY KEY(id),
-    CONSTRAINT fk_empresa FOREIGN KEY(empresaId) REFERENCES empresas(id)
+    CONSTRAINT fk_parking FOREIGN KEY(parkingId) REFERENCES parkings(id)
 );
 
-CREATE TABLE parking(
+CREATE TABLE parkings(
     id INT GENERATED ALWAYS AS IDENTITY,
     id_empresa INT NOT NULL,
     nombre TEXT NOT NULL,
@@ -52,10 +52,19 @@ CREATE TABLE vehicles(
     hour2 TIME,
     total INT NOT NULL DEFAULT 0,
     comentario TEXT,
-    pay boolean NOT NULL,
-    factura INT NOT NULL,
-    
+    pay boolean NOT NULL,    
     PRIMARY KEY(id)
+);
+
+CREATE TABLE vehicle_parkings(
+    id INT GENERATED ALWAYS AS IDENTITY,
+    vehicleId INT NOT NULL,
+    parkingId INT NOT NULL,
+    factura INT NOT NULL,
+
+    PRIMARY KEY(id),
+    CONSTRAINT fk_vehicle FOREIGN KEY(vehicleId) REFERENCES vehicles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_parking FOREIGN KEY(parkingId) REFERENCES parkings(id)
 );
 
 CREATE TABLE transports( 

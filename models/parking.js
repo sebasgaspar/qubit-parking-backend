@@ -1,33 +1,37 @@
 const Sequelize = require('sequelize');
 const { connection } = require('../database/config');
 
+const {Users} =require('./user');
 
 const sequelize = connection()
 
-const Empresa = sequelize.define('empresas', {
+const Parking = sequelize.define('parkings', {
 
     id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
     },
-    nombre: {
+    id_empresa: {
         type: Sequelize.TEXT
     },
-    nit: {
+    nombre: {
         type: Sequelize.TEXT,
     },
-    telefono:{
+    direccion:{
         type: Sequelize.TEXT,
     },
     correo: {
         type: Sequelize.TEXT
     },
-    clienteId:{
+    logo:{
         type: Sequelize.INTEGER
     },
 }, {
     timestamps: false
 });
+
+Parking.hasMany(Users, {foreingKey: 'parkingId', sourceKey: 'id'});
+Users.belongsTo(Parking, {foreingKey: 'parkingId', sourceKey: 'id'});
 
 module.exports = {
     Empresa

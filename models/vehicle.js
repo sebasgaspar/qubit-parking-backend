@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 const { connection } = require('../database/config');
 
+const { Vehicle_Parking } = require('./vehicle_empresa');
 const sequelize = connection()
 
 const Vehicle = sequelize.define('vehicles', {
@@ -24,21 +25,22 @@ const Vehicle = sequelize.define('vehicles', {
     hour2: {
         type: Sequelize.TIME
     },
-    total:{
+    total: {
         type: Sequelize.INTEGER
     },
     comentario: {
         type: Sequelize.TEXT,
     },
-    pay:{
+    pay: {
         type: Sequelize.BOOLEAN,
-    },
-    factura:{
-        type: Sequelize.INTEGER,
     }
 }, {
     timestamps: false
 });
+
+Vehicle.hasMany(Vehicle_Parking, { foreingKey: 'vehicleId', sourceKey: 'id' });
+Vehicle_Parking.belongsTo(Vehicle, { foreingKey: 'vehicleId', sourceKey: 'id' });
+
 module.exports = {
     Vehicle,
     sequelize

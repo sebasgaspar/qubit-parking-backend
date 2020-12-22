@@ -17,7 +17,7 @@ const Users = sequelize.define('usuarios', {
     correo: {
         type: Sequelize.TEXT
     },
-    empresaId: {
+    parkingId: {
         type: Sequelize.INTEGER
     }
 }, {

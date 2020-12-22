@@ -6,7 +6,7 @@ const { Users } = require('../models/user');
 
 const createUser = async (req, res) => {
 
-    const { usuario, contrasena, correo, empresaId } = req.body;
+    const { usuario, contrasena, correo, parkingId } = req.body;
     try {
         const existeUser = await Users.findOne(
             {
@@ -28,9 +28,9 @@ const createUser = async (req, res) => {
             usuario,
             contrasena:password,
             correo,
-            empresaId
+            parkingId
         }, {
-            fields: ['usuario', 'contrasena', 'correo', 'empresaId']
+            fields: ['usuario', 'contrasena', 'correo', 'parkingId']
         });
         //Generar mi JWT
         const token = await generarJWT(usuario.id)
