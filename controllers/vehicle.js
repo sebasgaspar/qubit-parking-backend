@@ -7,7 +7,7 @@ const { parseTime, getTime } = require('../helpers/functions');
 
 const createInsert = async (req, res) => {
 
-    const { vehicle, placa, fecha, hour, pay } = req.body;
+    const { vehicle, placa, fecha, hour, pay, parkingId } = req.body;
     try {
 
         let newVehicle = await Vehicle.create({
@@ -19,10 +19,19 @@ const createInsert = async (req, res) => {
         }, {
             fields: ['vehicle', 'placa', 'fecha', 'hour', 'pay']
         });
+        let id = newVehicle['dataValues']['id'];
+        let vehicle_parking = await Vehicle_Parking.create({
+            vehicleId: id,
+            parkingId: parkingId,
+            factura: 0
+        }, {
+            fields: ['vehicleId', 'parkingId', 'factura']
+        });
         if (newVehicle) {
             res.json({
                 ok: true,
                 newVehicle,
+                vehicle_parking
             });
         }
     }
@@ -42,7 +51,7 @@ async function getLast(id) {
             });
         if (last !== null) {
             return last;
-        }else{
+        } else {
             return 0;
         }
     }
@@ -56,22 +65,21 @@ const Update = async (req, res) => {
     console.log(factura);
     factura = factura + 1
     try {
+        let vehicle_parking = await Vehicle_Parking.update({ factura: factura }, {
+            where: {
+                vehicleId: id
+            }
+        });
         let newVehicle = await Vehicle.update({ hour2: hora2, total: total, comentario: comentario, pay: true }, {
             where: {
                 id: id
             }
         });
-        let vehicle_parking = await Vehicle_Parking.create({
-            vehicleId: id,
-            parkingId: parkingId,
-            factura
-        }, {
-            fields: ['vehicleId', 'parkingId', 'factura']
-        });
         if (newVehicle) {
             res.json({
                 ok: true,
                 newVehicle,
+                factura,
                 vehicle_parking
             });
         }
@@ -120,13 +128,13 @@ const search = async (req, res) => {
 const getReport = async (req, res) => {
     try {
         const time = req.params.wk
-        const { date } = req.body;
+        const { date, id } = req.body;
         console.log(date);
         let vehicle = null;
         if (time == 0) {
-            vehicle = await sequelize.query(`select * from vehicles where fecha = DATE '${date}'`, { type: QueryTypes.SELECT });
+            vehicle = await sequelize.query(`select v.* from vehicles v inner join vehicle_parkings vp on v.id=vp."vehicleId" where fecha = DATE '${date}' and vp."parkingId"=${id}`, { type: QueryTypes.SELECT });
         } else {
-            vehicle = await sequelize.query(`SELECT * FROM vehicles where fecha > now() - interval '${time} week';`, { type: QueryTypes.SELECT });
+            vehicle = await sequelize.query(`select v.* from vehicles v inner join vehicle_parkings vp on v.id=vp."vehicleId" where fecha > now() - interval '${time} week' and vp."parkingId"=${id};`, { type: QueryTypes.SELECT });
         }
         console.log(vehicle);
         if (!vehicle) {
@@ -178,8 +186,33 @@ const pay = async (req, res) => {
         })
     }
 }
-const deleteVehicle = async (req, res) => {
+const getCupo = async (req, res) => {
     const { id } = req.body;
+    try {
+        const cupo = await sequelize.query(`SELECT v.vehicle , COUNT(v.vehicle) from vehicles v inner join vehicle_parkings vp on v.id=vp."vehicleId" where vp."parkingId"=${id} and v.pay=false group by v.vehicle`, { type: QueryTypes.SELECT, raw: false })
+            .then(function (result) {
+                return result;
+            });
+        if (!cupo) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Fallo realizando la busqueda'
+            });
+        }
+        res.json({
+            ok: true,
+            cupo
+        })
+    }
+    catch (error) {
+        return res.status(500).json({
+            ok: false,
+            msg: 'Hable con el administrador'
+        })
+    }
+}
+const deleteVehicle = async (req, res) => {
+    const id = req.params.id
     try {
         const vehicle = await Vehicle.destroy({
             where: {
@@ -204,7 +237,6 @@ const deleteVehicle = async (req, res) => {
             msg: 'Hable con el administrador'
         })
     }
-
 }
 module.exports = {
     createInsert,
@@ -212,5 +244,6 @@ module.exports = {
     getReport,
     pay,
     Update,
-    deleteVehicle
+    deleteVehicle,
+    getCupo
 }
