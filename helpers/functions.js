@@ -30,9 +30,9 @@ const getTime = (minutes) => {
             time.P = time.P + 1;
         } else if (min >= 15 && min < 36) {
             time.M = time.M + 1;
-        } else if (min >= 36 && min < 61) {
+        } else if (min >= 36 && min < 65) {
             time.H = time.H + 1;
-        } else if (min > 60) {
+        } else if (min > 64) {
             time.H = time.H + 1;
             increment(min - 60);
         }
