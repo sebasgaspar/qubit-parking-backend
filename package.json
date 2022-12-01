@@ -1,6 +1,9 @@
 {
   "name": "sistema-contable",
   "version": "1.0.0",
+  "engines": {
+    "npm": "7.x"
+  },
   "description": "Back-end de un sistema contable realizado para Qubit-Contable",
   "main": "index.js",
   "scripts": {
